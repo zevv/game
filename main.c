@@ -174,9 +174,7 @@ int main(int argc, char **argv)
 		printf("No audio: %s\n", Mix_GetError());
 	} else {
 		have_audio = 1;
-	}
 
-	if(have_audio) {
 		Mix_AllocateChannels(16);
 		for(i=0; i<NUM_SAMPLES; i++) {
 			sample[i].chunk = Mix_LoadWAV(sample[i].fname);
