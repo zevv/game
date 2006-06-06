@@ -104,7 +104,7 @@ int game_do(struct game_t *g, enum game_action action)
 			case GAME_ACTION_EARTHQUAKE:
 				if(g->earthquake_available) {
 					g->earthquake_available = 0;
-					g->earthquake_counter = 20;
+					g->earthquake_counter = 40;
 					game_callback(g, GAME_EVENT_EARTHQUAKE);
 					g->score -= 50;
 					if(g->score < 0) g->score = 0;
@@ -134,6 +134,7 @@ static int game_start(struct game_t *g)
 	g->state = GAME_STATE_PLAY;
 	g->time = 0;
 	g->earthquake_available = 1;
+	g->earthquake_counter = 0;
 
 	for(y=0; y<BOARD_H; y++) {
 		for(x=0; x<BOARD_W; x++) {

@@ -288,9 +288,13 @@ int main(int argc, char **argv)
 }
 
 
-static void blit(enum blitrect id, int x, int y)
+static void blit(struct game_t *g, enum blitrect id, int x, int y)
 {
 	SDL_Rect r;
+	if(g->earthquake_counter) {
+		x += (rand() % g->earthquake_counter/3) - g->earthquake_counter/6;
+		y += (rand() % g->earthquake_counter/3) - g->earthquake_counter/6;
+	}
 	r.x = x;
 	r.y = y;
 	SDL_BlitSurface(blits, &blitrect[id], screen, &r);
@@ -305,7 +309,6 @@ void draw(struct game_t *g)
 	int blink;
 	int i;
 	char score[BOARD_W+1];
-	int dx, dy;
 
 	if(blink_counter++ == 15) blink_counter = 0;
 	blink = (blink_counter < 10);
@@ -327,16 +330,11 @@ void draw(struct game_t *g)
 			c = &g->cell[x][y];
 
 			if((c->contents > 0) && (c->contents <= g->num_blocks) && !(g->state == GAME_STATE_PAUSE)) {
-				dx = dy = 0;
-				if(g->earthquake_counter) {
-					dx = (rand() % g->earthquake_counter) - g->earthquake_counter/2;
-					dy = (rand() % g->earthquake_counter) - g->earthquake_counter/2;
-				}
-				blit(c->contents -  1 + BR_BLOCK1, x*32+dx, y*32+dy);
-				if(c->exploding) blit(c->exploding - 1 + BR_EXPLODING1, x*32+dx, y*32+dy);
+				blit(g, c->contents -  1 + BR_BLOCK1, x*32, y*32);
+				if(c->exploding) blit(g, c->exploding - 1 + BR_EXPLODING1, x*32, y*32);
 
 			} else {
-				blit(BR_BACKGROUND, x*32, y*32);
+				blit(g, BR_BACKGROUND, x*32, y*32);
 			}
 				
 
@@ -347,7 +345,7 @@ void draw(struct game_t *g)
 	 * Draw cursor
 	 */
 
-	for(i=0; i<blink+1; i++) blit(BR_CURSOR, g->cursor_x * 32, g->cursor_y * 32);
+	for(i=0; i<blink+1; i++) blit(g, BR_CURSOR, g->cursor_x * 32, g->cursor_y * 32);
 
 	/*
 	 * Draw score
@@ -355,18 +353,18 @@ void draw(struct game_t *g)
 	
 	snprintf(score, sizeof(score), "%*d", BOARD_W, g->score_counter);
 	for(x=0; x<strlen(score); x++) {
-		if(score[x] != ' ') blit(BR_CHAR_0 + score[x] - '0', x*32, 0);
+		if(score[x] != ' ') blit(g, BR_CHAR_0 + score[x] - '0', x*32, 0);
 	}
 	
-	if(g->state == GAME_STATE_IDLE) blit(BR_PRESS_S_TO_START, 0, 32*6);
+	if(g->state == GAME_STATE_IDLE) blit(g, BR_PRESS_S_TO_START, 0, 32*6);
 
 	if(g->state == GAME_STATE_GAME_OVER) {
-		blit(BR_GAME_OVER, 0, 32*4);
-		blit(BR_PRESS_S_TO_START, 0, 32*6);
+		blit(g, BR_GAME_OVER, 0, 32*4);
+		blit(g, BR_PRESS_S_TO_START, 0, 32*6);
 	}
 	
 	if(g->state == GAME_STATE_PAUSE) {
-		blit(BR_PAUSE, 32*1, 32*4);
+		blit(g, BR_PAUSE, 32*1, 32*4);
 		if(have_audio) {
 			if(! Mix_Playing(15)) Mix_PlayChannel(15, sample[SAMPLE_PAUSE].chunk, 0);
 		}
