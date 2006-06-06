@@ -32,7 +32,7 @@ WINDRES := $(CROSS)windres
 	$(CC) $(CFLAGS) -c $<
 
 %.coff: %.rc
-	$(WINDRES)$< $@
+	$(WINDRES) $< $@
 
 
 $(BIN):	$(OBJS) 
