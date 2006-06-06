@@ -154,9 +154,12 @@ int main(int argc, char **argv)
 	SDL_WM_SetCaption("Game", "Game");
 
 	/*
-	 * Init video
+	 * Set icon and init video
 	 */
 
+	tmp = IMG_Load("img/icon.png");
+	SDL_WM_SetIcon(tmp, NULL);
+	SDL_FreeSurface(tmp);
 	screen = SDL_SetVideoMode(BOARD_W*32+3, BOARD_H*32+3, 0, 0);
 	SDL_EnableKeyRepeat(100, 40);
 

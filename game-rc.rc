@@ -1,4 +1,4 @@
 #include <windows.h>
 
-0           ICON    DISCARDABLE     "img/game.ico"
+0           ICON    DISCARDABLE     "img/icon.ico"
 
