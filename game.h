@@ -55,6 +55,7 @@ struct cell_t {
 	int prev_falling;
 	int fallen;
 	int exploding;
+	int same;
 };
 
 struct game_t {

@@ -41,6 +41,11 @@ int game_do(struct game_t *g, enum game_action action)
 {
 	struct cell_t cell;
 	
+	if(g->cursor_x < 0) g->cursor_x = 0;
+	if(g->cursor_x > BOARD_W-2) g->cursor_x = BOARD_W-2;
+	if(g->cursor_y < 0) g->cursor_y = 0;
+	if(g->cursor_y > BOARD_H-1) g->cursor_y = BOARD_H-1;
+	
 	switch(action) {
 
 		case GAME_ACTION_START:
@@ -119,7 +124,7 @@ static int game_start(struct game_t *g)
 	g->num_blocks = 6;
 	g->state = GAME_STATE_PLAY;
 	g->time = 0;
-	
+
 	for(y=0; y<BOARD_H; y++) {
 		for(x=0; x<BOARD_W; x++) {
 			cell = &g->cell[x][y];
@@ -140,6 +145,41 @@ static int game_start(struct game_t *g)
 }
 
 
+static void explode_same_cells(struct game_t *g)
+{
+	int x, y;
+	struct cell_t *cell;
+	int same_count = 0;
+	
+	for(x=0; x<BOARD_W; x++) {
+		for(y=0; y<BOARD_H; y++) {
+			cell = &g->cell[x][y];
+			if(cell->same) {
+				if(!cell->exploding) cell->exploding = 1;
+				same_count ++;
+				cell->same = 0;
+			}
+		}
+	}
+
+	if(same_count >= 5) {
+		game_callback(g, GAME_EVENT_BONUS2);
+	}
+
+	else if(same_count >= 4) {
+		game_callback(g, GAME_EVENT_BONUS);
+	}
+
+	else if(same_count >= 5) {
+		game_callback(g, GAME_EVENT_EXPLODING);
+	}
+
+	g->score += (same_count - 2) * 3;
+}
+	
+
+	
+
 static int game_tick(struct game_t *g)
 {
 	int x, y;
@@ -150,11 +190,10 @@ static int game_tick(struct game_t *g)
 	int same_count = 0;
 	int t;
 	int i;
+	struct cell_t *cell = NULL;
+	struct cell_t *pcell = NULL;
+	struct cell_t *tcell;
 
-	if(g->cursor_x < 0) g->cursor_x = 0;
-	if(g->cursor_x > BOARD_W-2) g->cursor_x = BOARD_W-2;
-	if(g->cursor_y < 0) g->cursor_y = 0;
-	if(g->cursor_y > BOARD_H-1) g->cursor_y = BOARD_H-1;
 
 	/*
 	 * Check for falling blocks
@@ -202,7 +241,9 @@ static int game_tick(struct game_t *g)
 
 
 	/*
-	 * Add a new block every now and then
+	 * Add a new block every now and then. If there is a block
+	 * at the place we want to insert the new block, the game
+	 * is over.
 	 */
 
 	g->time ++;
@@ -231,7 +272,8 @@ static int game_tick(struct game_t *g)
 				if(g->cell[x][y].contents && (g->cell[x][y].exploding > 0)) {
 					g->cell[x][y].exploding ++;
 					if(g->cell[x][y].exploding > 5) {
-						g->cell[x][y].contents = 0;
+						cell = &g->cell[x][y];
+						memset(cell, 0, sizeof(*cell));
 						g->score ++;
 					}
 				}
@@ -243,63 +285,48 @@ static int game_tick(struct game_t *g)
 	/*
 	 * Check rows of 3 or longer the same
 	 */
+	
 
 	for(y=0; y<BOARD_H; y++) {
-		same_count = 0;
-		t = 0;
+		same_count = 1;
+		cell = pcell = NULL;
 		for(x=0; x<=BOARD_W; x++) {
-			if((x<BOARD_W) && g->cell[x][y].contents == t) {
-				if((g->cell[x][y].contents != 0) && (!g->cell[x][y].exploding)) same_count ++;
-			} else {
-				if(same_count > 1) {
-					for(i=x-same_count-1; i<=x-1; i++) {
-						if(g->cell[i][y].exploding == 0) {
-							g->cell[i][y].exploding = 1;
-						}
-					}
+			pcell = cell;
+			cell = (x<BOARD_W) ? &g->cell[x][y] : NULL;
 
-					if(same_count > 3) {
-						game_callback(g, GAME_EVENT_BONUS2);
-						g->score += 20;
-					} else if(same_count > 2) {
-						game_callback(g, GAME_EVENT_BONUS);
-						g->score += 10;
-					} else {
-						game_callback(g, GAME_EVENT_EXPLODING);
+			if(cell && pcell && (cell->contents) && (cell->contents == pcell->contents) && !cell->exploding) {
+				 same_count ++;
+			} else {
+				if(same_count >= 3) {
+					for(i=0; i<same_count; i++) {
+						tcell = &g->cell[x-i-1][y];
+						tcell->same =1;
 					}
+					explode_same_cells(g);
 				}
-				if((x < BOARD_W) && (y<BOARD_H)) t = g->cell[x][y].contents;
-				same_count = 0;
+				same_count = 1;
 			}
 		}
 	}
-
+				
 	for(x=0; x<BOARD_W; x++) {
-		same_count = 0;
-		t = 0;
-		for(y=0; y<=BOARD_H; y++) {
-			if((y<BOARD_H) && g->cell[x][y].contents == t) {
-				if((g->cell[x][y].contents != 0) && (!g->cell[x][y].exploding)) same_count ++;
+		same_count = 1;
+		cell = pcell = NULL;
+		for(y=0; y<BOARD_H+1; y++) {
+			pcell = cell;
+			cell = (y<BOARD_H) ? &g->cell[x][y] : NULL;
+
+			if(cell && pcell && (cell->contents) && (cell->contents == pcell->contents) && !cell->exploding) {
+				 same_count ++;
 			} else {
-				if(same_count > 1) {
-					for(i=y-same_count-1; i<=y-1; i++) {
-						if(g->cell[x][i].exploding == 0) {
-							g->cell[x][i].exploding = 1;
-						}
+				if(same_count >= 3) {
+					for(i=0; i<same_count; i++) {
+						tcell = &g->cell[x][y-i-1];
+						tcell->same = 1;
 					}
-					
-					if(same_count > 3) {
-						game_callback(g, GAME_EVENT_BONUS2);
-						g->score += 20;
-					} else if(same_count > 2) {
-						game_callback(g, GAME_EVENT_BONUS);
-						g->score += 10;
-					} else {
-						game_callback(g, GAME_EVENT_EXPLODING);
-					}
+					explode_same_cells(g);
 				}
-				if((x < BOARD_W) && (y<BOARD_H)) t = g->cell[x][y].contents;
-				same_count = 0;
+				same_count = 1;
 			}
 		}
 	}
