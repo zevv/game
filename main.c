@@ -36,7 +36,6 @@ enum blitrect {
 	BR_BLOCK4,
 	BR_BLOCK5,
 	BR_BLOCK6,
-	BR_BLOCK7,
 
 	BR_EXPLODING1,
 	BR_EXPLODING2,
@@ -74,7 +73,6 @@ SDL_Rect blitrect[] = {
 	[BR_BLOCK4] =    	{  96,  32,  32, 32 },
 	[BR_BLOCK5] =    	{ 128,  32,  32, 32 },
 	[BR_BLOCK6] =    	{ 160,  32,  32, 32 },
-	[BR_BLOCK7] =    	{ 192,  32,  32, 32 },
                       	
 	[BR_EXPLODING1] =	{   0,  64,  32, 32 },
 	[BR_EXPLODING2] =	{  32,  64,  32, 32 },
@@ -323,7 +321,7 @@ void draw(struct game_t *g)
 
 			c = &g->cell[x][y];
 
-			if((c->contents > 0) && (c->contents <= g->num_blocks) ) {
+			if((c->contents > 0) && (c->contents <= g->num_blocks) && !(g->state == GAME_STATE_PAUSE)) {
 				blit(c->contents -  1 + BR_BLOCK1, x*32, y*32);
 				if(c->exploding) blit(c->exploding - 1 + BR_EXPLODING1, x*32, y*32);
 

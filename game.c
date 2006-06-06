@@ -32,6 +32,8 @@ struct game_t *game_new(void)
 
 	g = calloc(sizeof(*g), 1);
 	g->state = GAME_STATE_IDLE;
+	g->cursor_x = BOARD_W / 2;
+	g->cursor_y = BOARD_H / 2;
 	return g;
 }
 
@@ -60,6 +62,22 @@ int game_do(struct game_t *g, enum game_action action)
 			}
 			break;
 
+		case GAME_ACTION_UP:
+			if(g->cursor_y > 0) g->cursor_y --;
+			break;
+
+		case GAME_ACTION_DOWN:
+			if(g->cursor_y < BOARD_H-1) g->cursor_y ++;
+			break;
+		
+		case GAME_ACTION_LEFT:
+			if(g->cursor_x > 0) g->cursor_x --;
+			break;
+
+		case GAME_ACTION_RIGHT:
+			if(g->cursor_x < BOARD_W-2) g->cursor_x ++;
+			break;
+
 		default:
 			break;
 	}
@@ -70,22 +88,6 @@ int game_do(struct game_t *g, enum game_action action)
 
 			case GAME_ACTION_START:
 				return game_start(g);
-				break;
-
-			case GAME_ACTION_UP:
-				if(g->cursor_y > 0) g->cursor_y --;
-				break;
-
-			case GAME_ACTION_DOWN:
-				if(g->cursor_y < BOARD_H-1) g->cursor_y ++;
-				break;
-			
-			case GAME_ACTION_LEFT:
-				if(g->cursor_x > 0) g->cursor_x --;
-				break;
-
-			case GAME_ACTION_RIGHT:
-				if(g->cursor_x < BOARD_W-2) g->cursor_x ++;
 				break;
 
 			case GAME_ACTION_FLIP:
@@ -116,8 +118,6 @@ static int game_start(struct game_t *g)
 	struct cell_t *cell;
 
 	
-	g->cursor_x = BOARD_W / 2;
-	g->cursor_y = BOARD_H / 2;
 
 	g->score = 0;
 	g->score_counter = 0;
