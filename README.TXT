@@ -11,17 +11,25 @@ as long as possible. New blocks are falling down at an increasing
 rate, blocks can be removed by creating rows of three or more blocks
 of the same color. The longer the row, the more points you get.
 
-Move the cursor around with the mouse, arrow keys or vi-keys (hjkl),
-flip two neigbour blocks with the spacebar or mouse button.
+    space       - Flip two neighbour blocks. 
 
-
-    s           - (Re)start
-    p           - Pause
-    e		- Generate earthquake. Only once per game, costs 50 points
-    space       - Flip neighbour blocks
     arrow keys  - Move cursor
-    h,j,k,l     - Move cursor
-    escape      - Quit game
+
+    h,j,k,l     - Move cursor (vi-fans)
+
+    escape      - Quit game, no questions asked.
+
+    s           - Starts the game. If a game is in progress, a new game
+		  will be started instantly.
+
+    p           - Pause game. To avoid cheating, the game will be hidden
+    		  during pause.
+
+    e		- Generate earthquake. This can be used as a last resort
+    		  in case of panic, and will remove approximately 30 blocks
+		  from the field. Can be used once per game and costs 50 
+		  points.
+
 
 
 
