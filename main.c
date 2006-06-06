@@ -295,9 +295,12 @@ int main(int argc, char **argv)
 static void blit(struct game_t *g, enum blitrect id, int x, int y)
 {
 	SDL_Rect r;
+	int delta;
 	if(g->earthquake_counter) {
-		x += (rand() % g->earthquake_counter/3) - g->earthquake_counter/6;
-		y += (rand() % g->earthquake_counter/3) - g->earthquake_counter/6;
+		delta = g->earthquake_counter / 2;
+		if(delta < 1) delta = 1;
+		x += (rand() % delta) - delta/2;
+		y += (rand() % delta) - delta/2;
 	}
 	r.x = x;
 	r.y = y;
