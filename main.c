@@ -30,10 +30,6 @@ enum blitrect {
 	BR_CURSOR,
 	BR_PRESS_S_TO_START,
 
-	BR_SAME,
-	BR_FALLING,
-	BR_EXPLODING,
-
 	BR_BLOCK1,
 	BR_BLOCK2,
 	BR_BLOCK3,
@@ -71,10 +67,6 @@ enum blitrect {
 SDL_Rect blitrect[] = {
 	[BR_CURSOR] =    	{   0,   0,  64, 32 },
 	[BR_PRESS_S_TO_START]   {  64,   0, 192, 32 },
-
-	[BR_SAME] =      	{  64,   0,  32, 32 },
-	[BR_FALLING] =   	{  96,   0,  32, 32 },
-	[BR_EXPLODING] = 	{ 128,   0,  32, 32 },
 
 	[BR_BLOCK1] =    	{   0,  32,  32, 32 },
 	[BR_BLOCK2] =    	{  32,  32,  32, 32 },
