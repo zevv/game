@@ -305,6 +305,7 @@ void draw(struct game_t *g)
 	int blink;
 	int i;
 	char score[BOARD_W+1];
+	int dx, dy;
 
 	if(blink_counter++ == 15) blink_counter = 0;
 	blink = (blink_counter < 10);
@@ -326,8 +327,13 @@ void draw(struct game_t *g)
 			c = &g->cell[x][y];
 
 			if((c->contents > 0) && (c->contents <= g->num_blocks) && !(g->state == GAME_STATE_PAUSE)) {
-				blit(c->contents -  1 + BR_BLOCK1, x*32, y*32);
-				if(c->exploding) blit(c->exploding - 1 + BR_EXPLODING1, x*32, y*32);
+				dx = dy = 0;
+				if(g->earthquake_counter) {
+					dx = (rand() % g->earthquake_counter) - g->earthquake_counter/2;
+					dy = (rand() % g->earthquake_counter) - g->earthquake_counter/2;
+				}
+				blit(c->contents -  1 + BR_BLOCK1, x*32+dx, y*32+dy);
+				if(c->exploding) blit(c->exploding - 1 + BR_EXPLODING1, x*32+dx, y*32+dy);
 
 			} else {
 				blit(BR_BACKGROUND, x*32, y*32);
