@@ -8,6 +8,7 @@ LDFLAGS += -g -lSDL -lSDL_image -lSDL_mixer
 
 ifeq "$(target)" "win32"
 
+OBJS	+= game-rc.coff
 BIN	+= $(NAME).exe
 CROSS	+= i586-mingw32msvc-
 CFLAGS	+= -Iwinlibs/include
@@ -21,19 +22,25 @@ CFLAGS	+= -I/usr/include/SDL
 
 endif
 
-OBJS    = $(subst .c,.o, $(SRC))
-CC 	= $(CROSS)gcc
-LD 	= $(CROSS)gcc
+OBJS    += $(subst .c,.o, $(SRC))
 
-.c.o:
+CC 	:= $(CROSS)gcc
+LD 	:= $(CROSS)gcc
+WINDRES := $(CROSS)windres
+
+%.o: %.c
 	$(CC) $(CFLAGS) -c $<
+
+%.coff: %.rc
+	$(WINDRES)$< $@
+
 
 $(BIN):	$(OBJS) 
 	$(LD) -o $@ $(OBJS) $(LDFLAGS)
 
 
 clean:	
-	rm -f $(OBJS) $(BIN) core img.o *.exe
+	rm -f $(OBJS) $(BIN) core img.o *.exe *.coff
 
 
 dist-win32: 
