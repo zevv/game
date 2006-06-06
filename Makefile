@@ -41,19 +41,19 @@ dist-win32:
 	$(MAKE) target=win32
 	rm -f /tmp/game-win32.zip
 	cp winlibs/lib/*dll .
-	cd .. && zip -r /tmp/game-win32-$(VERSION).zip game/*.dll game/game.exe game/wav/*.wav game/img/*.png game/README  -x .svn 
+	cd .. && zip -r /tmp/game-win32-$(VERSION).zip game/*.dll game/game.exe game/wav/*.wav game/img/*.png game/README.TXT  -x .svn 
 	rm *dll
 
 dist-linux: 
 	$(MAKE) clean
 	$(MAKE)
 	rm -f /tmp/game-linux.tgz
-	cd .. && tar --exclude=.svn -zcvf /tmp/game-linux-$(VERSION).tgz game/game game/wav game/img/*.png game/README
+	cd .. && tar --exclude=.svn -zcvf /tmp/game-linux-$(VERSION).tgz game/game game/wav game/img/*.png game/README.TXT
 
 dist-src:
 	$(MAKE) clean
 	rm -f /tmp/game-src.tgz
-	cd .. && tar --exclude=.svn -zcvf /tmp/game-src-$(VERSION).tgz game/*.c game/*.h game/Makefile game/img game/wav game/README
+	cd .. && tar --exclude=.svn -zcvf /tmp/game-src-$(VERSION).tgz game/*.c game/*.h game/Makefile game/img game/wav game/README.TXT
 
 dist: dist-win32 dist-linux dist-src
 	rsync -P /tmp/game-win32-$(VERSION).zip /tmp/game-linux-$(VERSION).tgz /tmp/game-src-$(VERSION).tgz ico@pruts.nl:~/websites/www.zevv.nl/code/game
