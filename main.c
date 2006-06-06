@@ -130,19 +130,20 @@ struct sample_t {
 };
 
 struct sample_t sample[NUM_SAMPLES] = {
-	[SAMPLE_START] = { "wav/start.wav" },
-	[SAMPLE_EXPLODE] = { "wav/explode.wav" },
-	[SAMPLE_NEW_BLOCK] = { "wav/new_block.wav" },
-	[SAMPLE_FALL] = { "wav/fall.wav" },
-	[SAMPLE_SCORE] = { "wav/score.wav" },
-	[SAMPLE_BONUS] = { "wav/bonus.wav" },
-	[SAMPLE_BONUS2] = { "wav/bonus2.wav" },
-	[SAMPLE_HURRY] = { "wav/hurry.wav" },
-	[SAMPLE_PAUSE] = { "wav/pause.wav" },
-	[SAMPLE_GAME_OVER] = { "wav/game_over.wav" },
+	[SAMPLE_START] = 	{ "wav/start.wav" },
+	[SAMPLE_EXPLODE] = 	{ "wav/explode.wav" },
+	[SAMPLE_NEW_BLOCK] = 	{ "wav/new_block.wav" },
+	[SAMPLE_FALL] = 	{ "wav/fall.wav" },
+	[SAMPLE_SCORE] = 	{ "wav/score.wav" },
+	[SAMPLE_BONUS] = 	{ "wav/bonus.wav" },
+	[SAMPLE_BONUS2] = 	{ "wav/bonus2.wav" },
+	[SAMPLE_HURRY] = 	{ "wav/hurry.wav" },
+	[SAMPLE_PAUSE] = 	{ "wav/pause.wav" },
+	[SAMPLE_GAME_OVER] = 	{ "wav/game_over.wav" },
 };
 
 static void game_callback(struct game_t *g, enum game_event event);
+static int have_audio = 0;
 
 int main(int argc, char **argv)
 {
@@ -180,18 +181,21 @@ int main(int argc, char **argv)
 
 	r = Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 1, 1024);
 	if(r != 0) {
-		printf("Error loading wav: %s\n", Mix_GetError());
-		exit(1);
+		printf("No audio: %s\n", Mix_GetError());
+	} else {
+		have_audio = 1;
 	}
 
-	Mix_AllocateChannels(16);
-	for(i=0; i<NUM_SAMPLES; i++) {
-		sample[i].chunk = Mix_LoadWAV(sample[i].fname);
-		if(sample[i].chunk == NULL) {
-			printf("Error loading wav: %s\n", Mix_GetError());
-			exit(1);
+	if(have_audio) {
+		Mix_AllocateChannels(16);
+		for(i=0; i<NUM_SAMPLES; i++) {
+			sample[i].chunk = Mix_LoadWAV(sample[i].fname);
+			if(sample[i].chunk == NULL) {
+				printf("Error loading wav: %s\n", Mix_GetError());
+				exit(1);
+			}
+			Mix_VolumeChunk(sample[i].chunk, 64);
 		}
-		Mix_VolumeChunk(sample[i].chunk, 64);
 	}
 
 	/*
@@ -363,7 +367,9 @@ void draw(struct game_t *g)
 	
 	if(g->state == GAME_STATE_PAUSE) {
 		blit(BR_PAUSE, 32*1, 32*4);
-		if(! Mix_Playing(15)) Mix_PlayChannel(15, sample[SAMPLE_PAUSE].chunk, 0);
+		if(have_audio) {
+			if(! Mix_Playing(15)) Mix_PlayChannel(15, sample[SAMPLE_PAUSE].chunk, 0);
+		}
 	}	
 
 
@@ -397,7 +403,7 @@ static void game_callback(struct game_t *g, enum game_event event)
 		[GAME_EVENT_GAME_OVER] = SAMPLE_GAME_OVER,
 	};
 
-	Mix_PlayChannel(-1, sample[s[event]].chunk, 0);
+	if(have_audio) Mix_PlayChannel(-1, sample[s[event]].chunk, 0);
 }
 
 /*
