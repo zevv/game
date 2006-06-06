@@ -106,6 +106,8 @@ int game_do(struct game_t *g, enum game_action action)
 					g->earthquake_available = 0;
 					g->earthquake_counter = 20;
 					game_callback(g, GAME_EVENT_EARTHQUAKE);
+					g->score -= 50;
+					if(g->score < 0) g->score = 0;
 				}
 				break;
 
@@ -353,10 +355,11 @@ static int game_tick(struct game_t *g)
 	 * Update score counter
 	 */
 
-	if(g->score_counter < g->score) {
-		g->score_counter ++;	
+	if(g->score_counter != g->score) {
+		g->score_counter += (g->score_counter < g->score) ? 1 : -1;
 		game_callback(g, GAME_EVENT_SCORE_UPDATE);
 	}
+	
 
 	return 0;
 }

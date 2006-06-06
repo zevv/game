@@ -17,7 +17,7 @@ flip two neigbour blocks with the spacebar or mouse button.
 
     s           - (Re)start
     p           - Pause
-    e		- Generate earthquake; only once per game
+    e		- Generate earthquake. Only once per game, costs 50 points
     space       - Flip neighbour blocks
     arrow keys  - Move cursor
     h,j,k,l     - Move cursor
