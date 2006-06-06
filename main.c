@@ -110,6 +110,7 @@ enum sample {
 	SAMPLE_HURRY,
 	SAMPLE_PAUSE,
 	SAMPLE_GAME_OVER,
+	SAMPLE_EARTHQUAKE,
 
 	NUM_SAMPLES
 };
@@ -130,6 +131,7 @@ struct sample_t sample[NUM_SAMPLES] = {
 	[SAMPLE_HURRY] = 	{ "wav/hurry.wav" },
 	[SAMPLE_PAUSE] = 	{ "wav/pause.wav" },
 	[SAMPLE_GAME_OVER] = 	{ "wav/game_over.wav" },
+	[SAMPLE_EARTHQUAKE] = 	{ "wav/earthquake.wav" },
 };
 
 static void game_callback(struct game_t *g, enum game_event event);
@@ -258,6 +260,10 @@ int main(int argc, char **argv)
 						
 						case 's':
 							game_do(g, GAME_ACTION_START);
+							break;
+
+						case 'e':
+							game_do(g, GAME_ACTION_EARTHQUAKE);
 							break;
 
 						default:
@@ -389,6 +395,7 @@ static void game_callback(struct game_t *g, enum game_event event)
 		[GAME_EVENT_BONUS2] = SAMPLE_BONUS2,
 		[GAME_EVENT_HURRY] = SAMPLE_HURRY,
 		[GAME_EVENT_GAME_OVER] = SAMPLE_GAME_OVER,
+		[GAME_EVENT_EARTHQUAKE] = SAMPLE_EARTHQUAKE,
 	};
 
 	if(have_audio) Mix_PlayChannel(-1, sample[s[event]].chunk, 0);

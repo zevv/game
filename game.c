@@ -101,6 +101,14 @@ int game_do(struct game_t *g, enum game_action action)
 				game_tick(g);
 				break;
 
+			case GAME_ACTION_EARTHQUAKE:
+				if(g->earthquake_available) {
+					g->earthquake_available = 0;
+					g->earthquake_counter = 20;
+					game_callback(g, GAME_EVENT_EARTHQUAKE);
+				}
+				break;
+
 			default:
 				break;
 		}
@@ -111,19 +119,19 @@ int game_do(struct game_t *g, enum game_action action)
 }
 
 
+
 static int game_start(struct game_t *g)
 {
 	int x;
 	int y;
 	struct cell_t *cell;
 
-	
-
 	g->score = 0;
 	g->score_counter = 0;
 	g->num_blocks = 6;
 	g->state = GAME_STATE_PLAY;
 	g->time = 0;
+	g->earthquake_available = 1;
 
 	for(y=0; y<BOARD_H; y++) {
 		for(x=0; x<BOARD_W; x++) {
@@ -194,6 +202,15 @@ static int game_tick(struct game_t *g)
 	struct cell_t *pcell = NULL;
 	struct cell_t *tcell;
 
+	/*
+	 * Check for earthquake
+	 */
+
+	if(g->earthquake_counter) {
+		cell = &g->cell[rand() % BOARD_W][BOARD_H-1];
+		memset(cell, 0, sizeof(*cell));
+		g->earthquake_counter --;
+	}
 
 	/*
 	 * Check for falling blocks

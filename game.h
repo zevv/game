@@ -17,15 +17,14 @@
 enum game_action {
 
 	GAME_ACTION_START,
-
 	GAME_ACTION_TICK,
-
 	GAME_ACTION_UP,
 	GAME_ACTION_DOWN,
 	GAME_ACTION_LEFT,
 	GAME_ACTION_RIGHT,
 	GAME_ACTION_FLIP,
 	GAME_ACTION_PAUSE,
+	GAME_ACTION_EARTHQUAKE,
 };
 
 
@@ -47,6 +46,7 @@ enum game_event {
 	GAME_EVENT_BONUS2,
 	GAME_EVENT_GAME_OVER,
 	GAME_EVENT_HURRY,
+	GAME_EVENT_EARTHQUAKE,
 };
 
 struct cell_t {
@@ -72,6 +72,8 @@ struct game_t {
 	int score_counter;
 
 	int time;
+	int earthquake_available;
+	int earthquake_counter;
 
 	void (*callback)(struct game_t *g, enum game_event event);
 };
