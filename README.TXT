@@ -64,4 +64,5 @@ From source:
 
 
 Sound effects shamelessly stolen from bzflag and frozen bubble.
+Music from Desertplanet - Attack of the Mutant Mirages (November 4, 2003)
 
