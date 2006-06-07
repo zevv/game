@@ -292,7 +292,7 @@ int main(int argc, char **argv)
 							break;
 
 						case '=':
-							volume = Mix_VolumeMusic(-1) - 10;
+							volume = Mix_VolumeMusic(-1) + 10;
 							if(volume > 128) volume = 128;
 							Mix_VolumeMusic(volume);
 							break;
