@@ -146,6 +146,7 @@ int main(int argc, char **argv)
 	int i;
 	int r;
 	Mix_Music *music;
+	int volume;
 
 	/*
 	 * Init SDL
@@ -285,11 +286,15 @@ int main(int argc, char **argv)
 							break;
 
 						case '-':
-							Mix_VolumeMusic(Mix_VolumeMusic(-1) - 10);
+							volume = Mix_VolumeMusic(-1) - 10;
+							if(volume < 0) volume = 0;
+							Mix_VolumeMusic(volume);
 							break;
 
 						case '=':
-							Mix_VolumeMusic(Mix_VolumeMusic(-1) + 10);
+							volume = Mix_VolumeMusic(-1) - 10;
+							if(volume > 128) volume = 128;
+							Mix_VolumeMusic(volume);
 							break;
 
 
