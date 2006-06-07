@@ -46,11 +46,11 @@ Linux:
 
 Windows:
 
-    The windows version comes shipped with all necassery DLL's.
+    The windows version comes shipped as a installer program with all necessary
+    DLL's included.
 
-    - unzip the game.zip archive
-    - go to the newly created 'game' directory
-    - start 'game.exe'
+    - Run the setup program game-<version>-setup.exe
+    - Start the game from the desktop icon or start menu
 
 From source:
 
