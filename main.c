@@ -24,6 +24,7 @@ void draw(struct game_t *g);
 
 SDL_Surface *screen;
 SDL_Surface *background;
+SDL_Surface *help;
 SDL_Surface *blits;
 
 enum blitrect {
@@ -169,6 +170,10 @@ int main(int argc, char **argv)
 	
 	tmp = IMG_Load("img/background.png");
 	background = SDL_DisplayFormatAlpha(tmp);
+	SDL_FreeSurface(tmp);
+	
+	tmp = IMG_Load("img/help.png");
+	help = SDL_DisplayFormatAlpha(tmp);
 	SDL_FreeSurface(tmp);
 
 	/*
@@ -363,7 +368,10 @@ void draw(struct game_t *g)
 		if(score[x] != ' ') blit(g, BR_CHAR_0 + score[x] - '0', x*32, 0);
 	}
 	
-	if(g->state == GAME_STATE_IDLE) blit(g, BR_PRESS_S_TO_START, 0, 32*6);
+	if(g->state == GAME_STATE_IDLE) {
+		blit(g, BR_PRESS_S_TO_START, 0, 32*6);
+		SDL_BlitSurface(help, NULL, screen, NULL); 
+	}
 
 	if(g->state == GAME_STATE_GAME_OVER) {
 		blit(g, BR_GAME_OVER, 0, 32*4);
