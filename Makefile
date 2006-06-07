@@ -57,13 +57,13 @@ dist-linux:
 	$(MAKE)
 	$(STRIP) $(BIN)
 	rm -f /tmp/game-linux.tgz
-	cd .. && tar --exclude=.svn -zcvf /tmp/game-linux-$(VERSION).tgz game/game game/wav game/ogg game/img/*.png game/README.TXT
+	cd .. && tar --exclude=.svn -zcvf /tmp/game-linux-$(VERSION).tgz game/game game/wav game/mp3 game/img/*.png game/README.TXT
 	md5sum /tmp/game-linux-$(VERSION).tgz > /tmp/game-linux-$(VERSION).tgz.sum
 
 dist-src:
 	$(MAKE) clean
 	rm -f /tmp/game-src.tgz
-	cd .. && tar --exclude=.svn -zcvf /tmp/game-src-$(VERSION).tgz game/*.c game/*.h game/Makefile game/img game/wav game/ogg game/README.TXT
+	cd .. && tar --exclude=.svn -zcvf /tmp/game-src-$(VERSION).tgz game/*.c game/*.h game/Makefile game/img game/wav game/mp3 game/README.TXT
 	md5sum /tmp/game-src-$(VERSION).tgz > /tmp/game-src-$(VERSION).tgz.sum
 
 dist: dist-win32 dist-linux dist-src
