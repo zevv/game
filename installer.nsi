@@ -46,6 +46,7 @@ Section "!${NAME}"
   File /r winlibs/lib/*dll
   File /r /x .svn /x .svg img
   File /r /x .svn wav
+  File /r /x .svn ogg
   
   WriteRegStr HKLM "SOFTWARE\${NAME}" "Install_Dir" "$INSTDIR"
   

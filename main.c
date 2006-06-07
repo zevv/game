@@ -145,6 +145,7 @@ int main(int argc, char **argv)
 	SDL_Surface *tmp;
 	int i;
 	int r;
+	Mix_Music *music;
 
 	/*
 	 * Init SDL
@@ -186,6 +187,12 @@ int main(int argc, char **argv)
 	} else {
 		have_audio = 1;
 
+		music = Mix_LoadMUS("ogg/track-01.ogg");
+		if(music) {
+			Mix_VolumeMusic(64);
+			Mix_PlayMusic(music, -1);
+		}
+
 		Mix_AllocateChannels(16);
 		for(i=0; i<NUM_SAMPLES; i++) {
 			sample[i].chunk = Mix_LoadWAV(sample[i].fname);
@@ -193,7 +200,7 @@ int main(int argc, char **argv)
 				printf("Error loading wav: %s\n", Mix_GetError());
 				exit(1);
 			}
-			Mix_VolumeChunk(sample[i].chunk, 64);
+			Mix_VolumeChunk(sample[i].chunk, 128);
 		}
 	}
 
@@ -274,6 +281,15 @@ int main(int argc, char **argv)
 						case 'e':
 							game_do(g, GAME_ACTION_EARTHQUAKE);
 							break;
+
+						case '-':
+							Mix_VolumeMusic(Mix_VolumeMusic(-1) - 10);
+							break;
+
+						case '=':
+							Mix_VolumeMusic(Mix_VolumeMusic(-1) + 10);
+							break;
+
 
 						default:
 							break;
