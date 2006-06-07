@@ -63,5 +63,10 @@ dist-src:
 	cd .. && tar --exclude=.svn -zcvf /tmp/game-src-$(VERSION).tgz game/*.c game/*.h game/Makefile game/img game/wav game/README.TXT
 
 dist: dist-win32 dist-linux dist-src
-	rsync -P /tmp/game-win32-$(VERSION).zip /tmp/game-linux-$(VERSION).tgz /tmp/game-src-$(VERSION).tgz ico@pruts.nl:~/websites/www.zevv.nl/code/game
+	rsync -P \
+		README.TXT \
+		/tmp/game-win32-$(VERSION).zip \
+		/tmp/game-linux-$(VERSION).tgz \
+		/tmp/game-src-$(VERSION).tgz \
+		ico@pruts.nl:~/websites/www.zevv.nl/code/game
 

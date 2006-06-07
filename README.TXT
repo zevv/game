@@ -1,6 +1,5 @@
 
-A simple tetris-like game, requires SDL, SDL_image and SDL_mixer
-libraries.  (C) Copyright 2006 Ico Doornekamp
+A simple tetris-like game -  (C) Copyright 2006 Ico Doornekamp
 
 
 USAGE
