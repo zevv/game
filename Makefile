@@ -8,7 +8,7 @@ LDFLAGS += -g -lSDL -lSDL_image -lSDL_mixer
 
 ifeq "$(target)" "win32"
 
-OBJS	+= game-rc.coff
+OBJS	+= game.coff
 BIN	+= $(NAME).exe
 CROSS	+= i586-mingw32msvc-
 CFLAGS	+= -Iwinlibs/include
