@@ -266,7 +266,7 @@ static int game_tick(struct game_t *g)
 	 * is over.
 	 */
 
-	g->time ++;
+	if(g->state == GAME_STATE_PLAY) g->time ++;
 
 	t = 40 - (g->time/400);
 	if(t < 4) t = 4;
