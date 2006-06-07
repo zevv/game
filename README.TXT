@@ -24,10 +24,10 @@ of the same color. The longer the row, the more points you get.
     p           - Pause game. To avoid cheating, the game will be hidden
     		  during pause.
 
-    e		- Generate earthquake. This can be used as a last resort
-    		  in case of panic, and will remove approximately 30 blocks
-		  from the field. Can be used once per game and costs 50 
-		  points.
+    e		- Generate earthquake. This can be used as a last resort in
+		  case of panic, and will remove approximately 30 blocks from 
+		  the field. It might help you. Then again, it might not.
+		  Can be used once per game and costs 50 points.
 
 
 
@@ -40,7 +40,7 @@ Linux:
     Make sure the SDL, SDL_image and SDL_mixer runtime libraries are
     installed
 
-    $ tar -zxvf game-linux.tgz
+    $ tar -zxvf game-<version>-linux.tgz
     $ cd game
     $ ./game
 
@@ -57,10 +57,11 @@ From source:
     Make sure the SDL, SDL_image and SDL_mixer libraries and development
     files are installed
 
-    $ tar -zxvf game-src.tgz
+    $ tar -zxvf game-<version>-src.tgz
+    $ cd game
     $ make
     $ ./game
 
 
-Sound effects shamelessly stolen from bzflag and frozen-bubble.
+Sound effects shamelessly stolen from bzflag and frozen bubble.
 
