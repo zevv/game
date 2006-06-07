@@ -26,7 +26,10 @@ OBJS    += $(subst .c,.o, $(SRC))
 
 CC 	:= $(CROSS)gcc
 LD 	:= $(CROSS)gcc
+STRIP 	:= $(CROSS)strip
 WINDRES := $(CROSS)windres
+NSIS	:= makensis
+
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $<
@@ -42,18 +45,16 @@ $(BIN):	$(OBJS)
 clean:	
 	rm -f $(OBJS) $(BIN) core img.o *.exe *.coff
 
-
 dist-win32: 
 	$(MAKE) clean
 	$(MAKE) target=win32
-	rm -f /tmp/game-win32.zip
-	cp winlibs/lib/*dll .
-	cd .. && zip -r /tmp/game-win32-$(VERSION).zip game/*.dll game/game.exe game/wav/*.wav game/img/*.png game/README.TXT  -x .svn 
-	rm *dll
+	$(STRIP) $(NAME).exe
+	$(NSIS) -V2 -DVERSION="$(VERSION)" -DNAME="$(NAME)" -DBIN="$(NAME).exe" -DDIST="/tmp/$(NAME)-win32-$(VERSION)-setup.exe" installer.nsi
 
 dist-linux: 
 	$(MAKE) clean
 	$(MAKE)
+	$(STRIP) $(BIN)
 	rm -f /tmp/game-linux.tgz
 	cd .. && tar --exclude=.svn -zcvf /tmp/game-linux-$(VERSION).tgz game/game game/wav game/img/*.png game/README.TXT
 
@@ -65,7 +66,7 @@ dist-src:
 dist: dist-win32 dist-linux dist-src
 	rsync -P \
 		README.TXT \
-		/tmp/game-win32-$(VERSION).zip \
+		/tmp/game-win32-$(VERSION)-setup.exe \
 		/tmp/game-linux-$(VERSION).tgz \
 		/tmp/game-src-$(VERSION).tgz \
 		ico@pruts.nl:~/websites/www.zevv.nl/code/game
