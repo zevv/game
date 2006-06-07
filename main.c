@@ -187,10 +187,12 @@ int main(int argc, char **argv)
 	} else {
 		have_audio = 1;
 
-		music = Mix_LoadMUS("ogg/track-01.ogg");
+		music = Mix_LoadMUS("mp3/track-01.mp3");
 		if(music) {
 			Mix_VolumeMusic(64);
 			Mix_PlayMusic(music, -1);
+		} else {
+			printf("Can't load music: %s\n", Mix_GetError());
 		}
 
 		Mix_AllocateChannels(16);
