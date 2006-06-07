@@ -42,6 +42,7 @@ Section "!${NAME}"
 
   ;SetOverwrite on  
   File ${BIN}
+  File README.TXT
   File /r winlibs/lib/*dll
   File /r /x .svn /x .svg img
   File /r /x .svn wav
@@ -60,6 +61,7 @@ Section "!${NAME}"
 
   CreateDirectory "$SMPROGRAMS\${NAME}"
   CreateShortCut "$SMPROGRAMS\${NAME}\${NAME}.lnk" "$INSTDIR\${BIN}"
+  CreateShortCut "$SMPROGRAMS\${NAME}\README.TXT.lnk" "$INSTDIR\README.TXT"
   CreateShortCut "$SMPROGRAMS\${NAME}\Uninstall.lnk" "$INSTDIR\uninstall.exe"
 
   ;
@@ -84,6 +86,7 @@ Section "Uninstall"
   Delete $INSTDIR\*.dll
   Delete $INSTDIR\stdout.txt
   Delete $INSTDIR\stderr.txt
+  Delete $INSTDIR\README.TXT
   Rmdir /r $INSTDIR\img
   Rmdir /r $INSTDIR\wav
 
