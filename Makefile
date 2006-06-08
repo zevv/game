@@ -30,6 +30,7 @@ STRIP 	:= $(CROSS)strip
 WINDRES := $(CROSS)windres
 NSIS	:= makensis
 
+all: $(BIN) img/game.png img/help.png
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $<
@@ -44,7 +45,20 @@ $(BIN):	$(OBJS)
 
 clean:	
 	rm -f $(OBJS) $(BIN) core img.o *.exe *.coff
-	make -C img clean
+	rm -f img/game.png img/help.png
+
+
+img/game.png: img/game.svg
+	inkscape --file $< \
+		--export-area=0:0:256:256 \
+		--export-png=$@ 
+
+
+img/help.png: img/help.svg
+	inkscape --file $< \
+		--export-png=$@ 
+	mogrify -gravity south -fill white -annotate +0+0 "version $(VERSION)" $@
+
 
 dist-win32: 
 	$(MAKE) clean
@@ -53,18 +67,20 @@ dist-win32:
 	$(NSIS) -V2 -DVERSION="$(VERSION)" -DNAME="$(NAME)" -DBIN="$(NAME).exe" -DDIST="/tmp/$(NAME)-win32-$(VERSION)-setup.exe" installer.nsi
 	md5sum /tmp/$(NAME)-win32-$(VERSION)-setup.exe > /tmp/$(NAME)-win32-$(VERSION)-setup.exe.sum
 
+
 dist-linux: 
 	$(MAKE) clean
 	$(MAKE)
 	$(STRIP) $(BIN)
 	rm -f /tmp/game-linux.tgz
-	cd .. && tar --exclude=.svn -zcvf /tmp/game-linux-$(VERSION).tgz game/game game/wav game/mp3 game/img/*.png game/README.TXT
+	cd .. && tar --exclude=.svn -zcf /tmp/game-linux-$(VERSION).tgz game/game game/wav game/mp3 game/img/*.png game/README.TXT
 	md5sum /tmp/game-linux-$(VERSION).tgz > /tmp/game-linux-$(VERSION).tgz.sum
 
 dist-src:
 	$(MAKE) clean
+	$(MAKE) img/game.png img/help.png
 	rm -f /tmp/game-src.tgz
-	cd .. && tar --exclude=.svn -zcvf /tmp/game-src-$(VERSION).tgz game/*.c game/*.h game/Makefile game/img game/wav game/mp3 game/README.TXT
+	cd .. && tar --exclude=.svn -zcf /tmp/game-src-$(VERSION).tgz game/*.c game/*.h game/Makefile game/img game/wav game/mp3 game/README.TXT
 	md5sum /tmp/game-src-$(VERSION).tgz > /tmp/game-src-$(VERSION).tgz.sum
 
 dist: dist-win32 dist-linux dist-src
