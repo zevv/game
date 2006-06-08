@@ -44,6 +44,7 @@ $(BIN):	$(OBJS)
 
 clean:	
 	rm -f $(OBJS) $(BIN) core img.o *.exe *.coff
+	make -C img clean
 
 dist-win32: 
 	$(MAKE) clean

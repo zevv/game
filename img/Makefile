@@ -1,4 +1,6 @@
 
+VERSION = $(shell svnversion -c .. | cut -d : -f 2)
+
 all: game.png help.png
 
 game.png: game.svg
@@ -9,4 +11,8 @@ game.png: game.svg
 help.png: help.svg
 	inkscape --file $< \
 		--export-png=$@ 
+	mogrify -gravity south -fill white -annotate +0+0 "version $(VERSION)" $@
+
+clean:
+	rm -f game.png help.png
 
