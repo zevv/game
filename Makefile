@@ -43,9 +43,10 @@ $(BIN):	$(OBJS) Changelog
 	$(LD) -o $@ $(OBJS) $(LDFLAGS)
 
 
-.PHONE: Changelog
+.PHONY: Changelog
 Changelog:
-	svn log . > Changelog
+	svn update
+	svn log | perl -pe 's/\|.+//;' -e 's/^[\s-]+$$//;' -e 's/r(\d+) \n/$$1: /;' > Changelog
 
 
 clean:	
