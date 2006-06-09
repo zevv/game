@@ -37,18 +37,14 @@ struct game_t *game_new(void)
 	return g;
 }
 
-static void game_callback(struct game_t *g, enum game_event ev);
+static void game_callback(struct game_t *g, struct game_event *event);
 
-int game_do(struct game_t *g, enum game_action action)
+int game_do(struct game_t *g, struct game_action *action)
 {
 	struct cell_t cell;
+	struct game_event event;
 	
-	if(g->cursor_x < 0) g->cursor_x = 0;
-	if(g->cursor_x > BOARD_W-2) g->cursor_x = BOARD_W-2;
-	if(g->cursor_y < 0) g->cursor_y = 0;
-	if(g->cursor_y > BOARD_H-1) g->cursor_y = BOARD_H-1;
-	
-	switch(action) {
+	switch(action->id) {
 
 		case GAME_ACTION_START:
 			return game_start(g);
@@ -78,13 +74,22 @@ int game_do(struct game_t *g, enum game_action action)
 			if(g->cursor_x < BOARD_W-2) g->cursor_x ++;
 			break;
 
+		case GAME_ACTION_SET_CURSOR:
+			g->cursor_x = action->data.set_cursor.x;
+			g->cursor_y = action->data.set_cursor.y;
+			if(g->cursor_x < 0) g->cursor_x = 0;
+			if(g->cursor_x > BOARD_W-2) g->cursor_x = BOARD_W-2;
+			if(g->cursor_y < 0) g->cursor_y = 0;
+			if(g->cursor_y > BOARD_H-1) g->cursor_y = BOARD_H-1;
+			break;
+
 		default:
 			break;
 	}
 
 	if(g->state == GAME_STATE_PLAY) {
 
-		switch(action) {
+		switch(action->id) {
 
 			case GAME_ACTION_START:
 				return game_start(g);
@@ -105,7 +110,8 @@ int game_do(struct game_t *g, enum game_action action)
 				if(g->earthquake_available) {
 					g->earthquake_available = 0;
 					g->earthquake_counter = 40;
-					game_callback(g, GAME_EVENT_EARTHQUAKE);
+					event.id = GAME_EVENT_EARTHQUAKE; 
+					game_callback(g, &event);
 					g->score -= 50;
 					if(g->score < 0) g->score = 0;
 				}
@@ -127,6 +133,7 @@ static int game_start(struct game_t *g)
 	int x;
 	int y;
 	struct cell_t *cell;
+	struct game_event event;
 
 	g->score = 0;
 	g->score_counter = 0;
@@ -150,7 +157,8 @@ static int game_start(struct game_t *g)
 		}
 	}
 
-	game_callback(g, GAME_EVENT_START);
+	event.id = GAME_EVENT_START; 
+	game_callback(g, &event);
 
 	return 0;
 }
@@ -159,8 +167,11 @@ static int game_start(struct game_t *g)
 static void explode_same_cells(struct game_t *g)
 {
 	int x, y;
+	int center_x = 0, center_y = 0;
 	struct cell_t *cell;
 	int same_count = 0;
+	struct game_event event;
+	int points;
 	
 	for(x=0; x<BOARD_W; x++) {
 		for(y=0; y<BOARD_H; y++) {
@@ -169,23 +180,25 @@ static void explode_same_cells(struct game_t *g)
 				if(!cell->exploding) cell->exploding = 1;
 				same_count ++;
 				cell->same = 0;
+				center_x += x;
+				center_y += y;
 			}
 		}
 	}
 
-	if(same_count >= 5) {
-		game_callback(g, GAME_EVENT_BONUS2);
-	}
+	center_x /= same_count;
+	center_y /= same_count;
+	
+	points = (same_count - 2) * 3;
 
-	else if(same_count >= 4) {
-		game_callback(g, GAME_EVENT_BONUS);
-	}
+	event.id = GAME_EVENT_EXPLODING; 
+	event.data.exploding.points = points;
+	event.data.exploding.blocks = same_count;
+	event.data.exploding.x = center_x;
+	event.data.exploding.y = center_y;
+	game_callback(g, &event);
 
-	else if(same_count >= 5) {
-		game_callback(g, GAME_EVENT_EXPLODING);
-	}
-
-	g->score += (same_count - 2) * 3;
+	g->score += points;
 }
 	
 
@@ -204,6 +217,7 @@ static int game_tick(struct game_t *g)
 	struct cell_t *cell = NULL;
 	struct cell_t *pcell = NULL;
 	struct cell_t *tcell;
+	struct game_event event;
 
 	/*
 	 * Check for earthquake
@@ -255,7 +269,10 @@ static int game_tick(struct game_t *g)
 		for(x=0; x<BOARD_W; x++) {
 			if(g->cell[x][2].contents && !g->cell[x][2].falling) t=1;
 		}
-		if(t) game_callback(g, GAME_EVENT_HURRY);
+		if(t) {
+			event.id = GAME_EVENT_HURRY; 
+			game_callback(g, &event);
+		}
 		hurry_counter = 0;
 	}
 
@@ -274,11 +291,13 @@ static int game_tick(struct game_t *g)
 		x = rand() % BOARD_W;
 		if(g->cell[x][0].contents) {
 			g->state = GAME_STATE_GAME_OVER;
-			game_callback(g, GAME_EVENT_GAME_OVER);
+			event.id = GAME_EVENT_GAME_OVER; 
+			game_callback(g, &event);
 		}
 		g->cell[x][0].contents = (rand() % g->num_blocks) + 1;
 		newblock_counter = 0;
-		game_callback(g, GAME_EVENT_NEW_BLOCK);
+		event.id = GAME_EVENT_NEW_BLOCK; 
+		game_callback(g, &event);
 	}
 
 
@@ -358,21 +377,24 @@ static int game_tick(struct game_t *g)
 
 	if(g->score_counter != g->score) {
 		g->score_counter += (g->score_counter < g->score) ? 1 : -1;
-		game_callback(g, GAME_EVENT_SCORE_UPDATE);
+		event.id = GAME_EVENT_SCORE_UPDATE; 
+		game_callback(g, &event);
 	}
 	
 
 	return 0;
 }
 
-void game_register_callback(struct game_t *g, void (*callback)(struct game_t *g, enum game_event event))
+
+void game_register_callback(struct game_t *g, void (*callback)(struct game_t *g, struct game_event *event))
 {
 	g->callback = callback;
 }
 
-static void game_callback(struct game_t *g, enum game_event ev)
+
+static void game_callback(struct game_t *g, struct game_event *event)
 {
-	if(g->callback) g->callback(g, ev);
+	if(g->callback) g->callback(g, event);
 }
 
 

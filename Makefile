@@ -39,7 +39,7 @@ all: $(BIN) img/game.png img/help.png
 	$(WINDRES) $< $@
 
 
-$(BIN):	$(OBJS) Changelog
+$(BIN):	$(OBJS)
 	$(LD) -o $@ $(OBJS) $(LDFLAGS)
 
 
@@ -57,7 +57,7 @@ clean:
 
 img/game.png: img/game.svg
 	inkscape --file $< \
-		--export-area=0:0:256:256 \
+		--export-area-drawing \
 		--export-png=$@ 
 
 
@@ -67,7 +67,7 @@ img/help.png: img/help.svg
 	mogrify -gravity south -fill white -annotate +0+0 "version $(VERSION)" $@
 
 
-dist-win32: 
+dist-win32: Changelog
 	$(MAKE) clean
 	$(MAKE) target=win32
 	$(STRIP) $(NAME).exe
@@ -75,7 +75,7 @@ dist-win32:
 	md5sum /tmp/$(NAME)-win32-$(VERSION)-setup.exe > /tmp/$(NAME)-win32-$(VERSION)-setup.exe.sum
 
 
-dist-linux: 
+dist-linux: Changelog
 	$(MAKE) clean
 	$(MAKE)
 	$(STRIP) $(BIN)

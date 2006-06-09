@@ -14,8 +14,16 @@
 #define BOARD_W 6
 #define BOARD_H 16
 
-enum game_action {
+enum game_state {
+	GAME_STATE_IDLE,
+	GAME_STATE_START,
+	GAME_STATE_PLAY,
+	GAME_STATE_PAUSE,
+	GAME_STATE_GAME_OVER,
+};
 
+
+enum game_action_id {
 	GAME_ACTION_START,
 	GAME_ACTION_TICK,
 	GAME_ACTION_UP,
@@ -25,28 +33,45 @@ enum game_action {
 	GAME_ACTION_FLIP,
 	GAME_ACTION_PAUSE,
 	GAME_ACTION_EARTHQUAKE,
+	GAME_ACTION_SET_CURSOR,
+};
+
+struct game_action_set_cursor {
+	int x;
+	int y;
+};
+
+struct game_action {
+	enum game_action_id id;
+	union {
+		struct game_action_set_cursor set_cursor;
+	} data;
 };
 
 
-enum game_state {
-	GAME_STATE_IDLE,
-	GAME_STATE_START,
-	GAME_STATE_PLAY,
-	GAME_STATE_PAUSE,
-	GAME_STATE_GAME_OVER,
-};
-
-enum game_event {
+enum game_event_id {
 	GAME_EVENT_START,
 	GAME_EVENT_EXPLODING,
 	GAME_EVENT_SCORE_UPDATE,
 	GAME_EVENT_NEW_BLOCK,
 	GAME_EVENT_FALL,
-	GAME_EVENT_BONUS,
-	GAME_EVENT_BONUS2,
 	GAME_EVENT_GAME_OVER,
 	GAME_EVENT_HURRY,
 	GAME_EVENT_EARTHQUAKE,
+};
+
+struct game_event_exploding {
+	int points;
+	int blocks;
+	int x;
+	int y;
+};
+
+struct game_event {
+	enum game_event_id id;
+	union {
+		struct game_event_exploding exploding;
+	} data;
 };
 
 struct cell_t {
@@ -75,13 +100,13 @@ struct game_t {
 	int earthquake_available;
 	int earthquake_counter;
 
-	void (*callback)(struct game_t *g, enum game_event event);
+	void (*callback)(struct game_t *g, struct game_event *event);
 };
 
 
 struct game_t *game_new(void);
-int game_do(struct game_t *g, enum game_action action);
-void game_register_callback(struct game_t *g, void (*callback)(struct game_t *g, enum game_event event));
+int game_do(struct game_t *g, struct game_action *action);
+void game_register_callback(struct game_t *g, void (*callback)(struct game_t *g, struct game_event *event));
 
 /*
  * End

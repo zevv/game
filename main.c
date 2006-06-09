@@ -43,7 +43,10 @@ enum blitrect {
 	BR_EXPLODING3,
 	BR_EXPLODING4,
 	BR_EXPLODING5,
-	BR_EXPLODING6,
+
+	BR_BONUS_3,
+	BR_BONUS_6,
+	BR_BONUS_9,
 		
 	BR_BACKGROUND,
 	BR_PAUSE,
@@ -80,7 +83,10 @@ SDL_Rect blitrect[] = {
 	[BR_EXPLODING3] =	{  64,  64,  32, 32 },
 	[BR_EXPLODING4] =	{  96,  64,  32, 32 },
 	[BR_EXPLODING5] =	{ 128,  64,  32, 32 },
-	[BR_EXPLODING6] =	{ 160,  64,  32, 32 },
+	
+	[BR_BONUS_3] =		{ 160,  64,  32, 32 },
+	[BR_BONUS_6] =		{ 192,  64,  32, 32 },
+	[BR_BONUS_9] =		{ 224,  64,  32, 32 },
 		
 	[BR_BACKGROUND] =	{   0,  96,  32, 32 },
 	[BR_PAUSE] =     	{  32,  96, 128, 32 },
@@ -121,7 +127,7 @@ struct sample_t {
 	Mix_Chunk *chunk;
 };
 
-struct sample_t sample[NUM_SAMPLES] = {
+struct sample_t sample_list[NUM_SAMPLES] = {
 	[SAMPLE_START] = 	{ "wav/start.wav" },
 	[SAMPLE_EXPLODE] = 	{ "wav/explode.wav" },
 	[SAMPLE_NEW_BLOCK] = 	{ "wav/new_block.wav" },
@@ -135,7 +141,18 @@ struct sample_t sample[NUM_SAMPLES] = {
 	[SAMPLE_EARTHQUAKE] = 	{ "wav/earthquake.wav" },
 };
 
-static void game_callback(struct game_t *g, enum game_event event);
+
+struct floating_score {
+	int x;
+	int y;
+	int dx;
+	int dy;
+	int points;
+	int visible;
+};
+
+static struct floating_score floating_score;
+static void game_callback(struct game_t *g, struct game_event *event);
 static int have_audio = 0;
 
 int main(int argc, char **argv)
@@ -147,6 +164,7 @@ int main(int argc, char **argv)
 	int r;
 	Mix_Music *music;
 	int volume;
+	struct game_action action;
 
 	/*
 	 * Init SDL
@@ -198,12 +216,12 @@ int main(int argc, char **argv)
 
 		Mix_AllocateChannels(16);
 		for(i=0; i<NUM_SAMPLES; i++) {
-			sample[i].chunk = Mix_LoadWAV(sample[i].fname);
-			if(sample[i].chunk == NULL) {
+			sample_list[i].chunk = Mix_LoadWAV(sample_list[i].fname);
+			if(sample_list[i].chunk == NULL) {
 				printf("Error loading wav: %s\n", Mix_GetError());
 				exit(1);
 			}
-			Mix_VolumeChunk(sample[i].chunk, 128);
+			Mix_VolumeChunk(sample_list[i].chunk, 128);
 		}
 	}
 
@@ -230,12 +248,15 @@ int main(int argc, char **argv)
 
 			case SDL_MOUSEMOTION:
 
-				g->cursor_x = (ev.motion.x-16) / 32;
-				g->cursor_y = ev.motion.y / 32;
+				action.id = GAME_ACTION_SET_CURSOR;
+				action.data.set_cursor.x = (ev.motion.x-16) / 32;
+				action.data.set_cursor.y = ev.motion.y / 32;
+				game_do(g, &action);
 				break;
 
 			case SDL_MOUSEBUTTONDOWN:
-				game_do(g, GAME_ACTION_FLIP);
+				action.id = GAME_ACTION_FLIP;
+				game_do(g, &action);
 				break;
 
 
@@ -250,39 +271,47 @@ int main(int argc, char **argv)
 							break;
 
 						case 'p':
-							game_do(g, GAME_ACTION_PAUSE);
+							action.id = GAME_ACTION_PAUSE; 
+							game_do(g, &action);
 							break;
 
 						case SDLK_UP:
 						case 'k':
-							game_do(g, GAME_ACTION_UP);
+							action.id = GAME_ACTION_UP; 
+							game_do(g, &action);
 							break;
 
 						case SDLK_DOWN:
 						case 'j':
-							game_do(g, GAME_ACTION_DOWN);
+							action.id = GAME_ACTION_DOWN; 
+							game_do(g, &action);
 							break;
 
 						case SDLK_LEFT:
 						case 'h':
-							game_do(g, GAME_ACTION_LEFT);
+							action.id = GAME_ACTION_LEFT; 
+							game_do(g, &action);
 							break;
 
 						case SDLK_RIGHT:
 						case 'l':
-							game_do(g, GAME_ACTION_RIGHT);
+							action.id = GAME_ACTION_RIGHT; 
+							game_do(g, &action);
 							break;
 
 						case SDLK_SPACE:
-							game_do(g, GAME_ACTION_FLIP);
+							action.id = GAME_ACTION_FLIP; 
+							game_do(g, &action);
 							break;
 						
 						case 's':
-							game_do(g, GAME_ACTION_START);
+							action.id = GAME_ACTION_START; 
+							game_do(g, &action);
 							break;
 
 						case 'e':
-							game_do(g, GAME_ACTION_EARTHQUAKE);
+							action.id = GAME_ACTION_EARTHQUAKE; 
+							game_do(g, &action);
 							break;
 
 						case '-':
@@ -306,7 +335,8 @@ int main(int argc, char **argv)
 
 			case SDL_USEREVENT:
 
-				game_do(g, GAME_ACTION_TICK);
+				action.id = GAME_ACTION_TICK; 
+				game_do(g, &action);
 				draw(g);
 				break;
 
@@ -404,9 +434,25 @@ void draw(struct game_t *g)
 	if(g->state == GAME_STATE_PAUSE) {
 		blit(g, BR_PAUSE, 32*1, 32*4);
 		if(have_audio) {
-			if(! Mix_Playing(15)) Mix_PlayChannel(15, sample[SAMPLE_PAUSE].chunk, 0);
+			if(! Mix_Playing(15)) Mix_PlayChannel(15, sample_list[SAMPLE_PAUSE].chunk, 0);
 		}
 	}	
+
+	/*
+	 * Draw floating score
+	 */
+
+	if(floating_score.visible) {
+		if(floating_score.points == 3) blit(g, BR_BONUS_3, floating_score.x, floating_score.y);
+		if(floating_score.points == 6) blit(g, BR_BONUS_6, floating_score.x, floating_score.y);
+		if(floating_score.points == 9) blit(g, BR_BONUS_9, floating_score.x, floating_score.y);
+		floating_score.x += floating_score.dx;
+		floating_score.y += floating_score.dy;
+
+		if((floating_score.x < 0) || (floating_score.y <0)) {
+			floating_score.visible = 0;
+		}
+	}
 
 
 	SDL_UpdateRect(screen, 0, 0, 0, 0);
@@ -425,22 +471,58 @@ Uint32 game_timer(Uint32 interval, void *data)
 	return interval;
 }
 
-static void game_callback(struct game_t *g, enum game_event event)
+static void game_callback(struct game_t *g, struct game_event *event)
 {
-	enum sample s[] = {
-		[GAME_EVENT_START] = SAMPLE_START,
-		[GAME_EVENT_EXPLODING ] =SAMPLE_EXPLODE,
-		[GAME_EVENT_NEW_BLOCK] = SAMPLE_NEW_BLOCK,
-		[GAME_EVENT_FALL] = SAMPLE_FALL,
-		[GAME_EVENT_SCORE_UPDATE] = SAMPLE_SCORE,
-		[GAME_EVENT_BONUS] = SAMPLE_BONUS,
-		[GAME_EVENT_BONUS2] = SAMPLE_BONUS2,
-		[GAME_EVENT_HURRY] = SAMPLE_HURRY,
-		[GAME_EVENT_GAME_OVER] = SAMPLE_GAME_OVER,
-		[GAME_EVENT_EARTHQUAKE] = SAMPLE_EARTHQUAKE,
+	struct sample_t *sample = NULL;
+
+	switch(event->id) {
+		
+		case GAME_EVENT_START:
+			sample = &sample_list[SAMPLE_START];
+			break;
+
+		case GAME_EVENT_EXPLODING :
+			if(event->data.exploding.blocks == 3) sample = &sample_list[SAMPLE_EXPLODE];
+			if(event->data.exploding.blocks == 4) sample = &sample_list[SAMPLE_BONUS];
+			if(event->data.exploding.blocks == 5) sample = &sample_list[SAMPLE_BONUS2];
+			if(event->data.exploding.blocks == 6) sample = &sample_list[SAMPLE_BONUS2];
+
+			floating_score.x = event->data.exploding.x * 32;
+			floating_score.y = event->data.exploding.y * 32;
+			floating_score.points = event->data.exploding.points;
+			floating_score.dx = -(floating_score.x - BOARD_W*32/2) / 10;
+			floating_score.dy = -(rand() % 16) - 12;
+			floating_score.visible = 1;
+
+			break;
+
+		case GAME_EVENT_NEW_BLOCK:
+			sample = &sample_list[SAMPLE_NEW_BLOCK];
+			break;
+
+		case GAME_EVENT_FALL:
+			sample = &sample_list[SAMPLE_FALL];
+			break;
+
+		case GAME_EVENT_SCORE_UPDATE:
+			sample = &sample_list[SAMPLE_SCORE];
+			break;
+
+		case GAME_EVENT_HURRY:
+			sample = &sample_list[SAMPLE_HURRY];
+			break;
+
+		case GAME_EVENT_GAME_OVER:
+			sample = &sample_list[SAMPLE_GAME_OVER];
+			break;
+
+		case GAME_EVENT_EARTHQUAKE:
+			sample = &sample_list[SAMPLE_EARTHQUAKE];
+			break;
+
 	};
 
-	if(have_audio) Mix_PlayChannel(-1, sample[s[event]].chunk, 0);
+	if(have_audio && sample) Mix_PlayChannel(-1, sample->chunk, 0);
 }
 
 /*
