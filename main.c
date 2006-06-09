@@ -313,6 +313,10 @@ int main(int argc, char **argv)
 							action.id = GAME_ACTION_EARTHQUAKE; 
 							game_do(g, &action);
 							break;
+						
+						case 'm':
+							Mix_VolumeMusic(0);
+							break;
 
 						case '-':
 							volume = Mix_VolumeMusic(-1) - 10;
