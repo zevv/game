@@ -314,7 +314,7 @@ static int game_tick(struct game_t *g)
 			pcell = cell;
 			cell = (x<BOARD_W) ? &g->cell[x][y] : NULL;
 
-			if(cell && pcell && (cell->contents) && (cell->contents == pcell->contents) && !cell->exploding) {
+			if(cell && pcell && (cell->contents) && (cell->contents == pcell->contents) && !cell->exploding && !cell->falling) {
 				 same_count ++;
 			} else {
 				if(same_count >= 3) {
@@ -336,7 +336,7 @@ static int game_tick(struct game_t *g)
 			pcell = cell;
 			cell = (y<BOARD_H) ? &g->cell[x][y] : NULL;
 
-			if(cell && pcell && (cell->contents) && (cell->contents == pcell->contents) && !cell->exploding) {
+			if(cell && pcell && (cell->contents) && (cell->contents == pcell->contents) && !cell->exploding && !cell->falling) {
 				 same_count ++;
 			} else {
 				if(same_count >= 3) {
