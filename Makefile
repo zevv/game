@@ -39,8 +39,12 @@ all: $(BIN) img/game.png img/help.png
 	$(WINDRES) $< $@
 
 
-$(BIN):	$(OBJS) 
+$(BIN):	$(OBJS) Changelog
 	$(LD) -o $@ $(OBJS) $(LDFLAGS)
+
+
+.PHONE: Changelog
+Changelog:
 	svn log . > Changelog
 
 
@@ -78,14 +82,15 @@ dist-linux:
 	cd .. && tar --exclude=.svn -zcf /tmp/game-linux-$(VERSION).tgz game/game game/wav game/mp3 game/img/*.png game/README.TXT game/Changelog
 	md5sum /tmp/game-linux-$(VERSION).tgz > /tmp/game-linux-$(VERSION).tgz.sum
 
-dist-src:
+dist-src: Changelog
 	$(MAKE) clean
+	$(MAKE) Changelog
 	$(MAKE) img/game.png img/help.png
 	rm -f /tmp/game-src.tgz
 	cd .. && tar --exclude=.svn -zcf /tmp/game-src-$(VERSION).tgz game/*.c game/*.h game/Makefile game/img game/wav game/mp3 game/README.TXT game/Changelog
 	md5sum /tmp/game-src-$(VERSION).tgz > /tmp/game-src-$(VERSION).tgz.sum
 
-dist: dist-win32 dist-linux dist-src
+dist: dist-win32 dist-linux dist-src Changelog
 	rsync -P \
 		README.TXT \
 		Changelog \
