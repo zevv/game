@@ -313,7 +313,6 @@ static int game_tick(struct game_t *g)
 					if(g->cell[x][y].exploding > 5) {
 						cell = &g->cell[x][y];
 						memset(cell, 0, sizeof(*cell));
-						g->score ++;
 					}
 				}
 			}
