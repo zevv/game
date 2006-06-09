@@ -67,23 +67,25 @@ img/help.png: img/help.svg
 	mogrify -gravity south -fill white -annotate +0+0 "version $(VERSION)" $@
 
 
-dist-win32: Changelog
+dist-win32:
 	$(MAKE) clean
+	$(MAKE) Changelog
 	$(MAKE) target=win32
 	$(STRIP) $(NAME).exe
 	$(NSIS) -V2 -DVERSION="$(VERSION)" -DNAME="$(NAME)" -DBIN="$(NAME).exe" -DDIST="/tmp/$(NAME)-win32-$(VERSION)-setup.exe" installer.nsi
 	md5sum /tmp/$(NAME)-win32-$(VERSION)-setup.exe > /tmp/$(NAME)-win32-$(VERSION)-setup.exe.sum
 
 
-dist-linux: Changelog
+dist-linux:
 	$(MAKE) clean
+	$(MAKE) Changelog
 	$(MAKE)
 	$(STRIP) $(BIN)
 	rm -f /tmp/game-linux.tgz
 	cd .. && tar --exclude=.svn -zcf /tmp/game-linux-$(VERSION).tgz game/game game/wav game/mp3 game/img/*.png game/README.TXT game/Changelog
 	md5sum /tmp/game-linux-$(VERSION).tgz > /tmp/game-linux-$(VERSION).tgz.sum
 
-dist-src: Changelog
+dist-src:
 	$(MAKE) clean
 	$(MAKE) Changelog
 	$(MAKE) img/game.png img/help.png
