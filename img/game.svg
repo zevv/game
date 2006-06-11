@@ -287,9 +287,9 @@
      borderopacity="0.4745098"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2"
-     inkscape:cx="236.18777"
-     inkscape:cy="121.06047"
+     inkscape:zoom="5.6568542"
+     inkscape:cx="210.55515"
+     inkscape:cy="173.03282"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      gridspacingx="2px"
@@ -728,7 +728,7 @@
          style="fill:#00b4c7;fill-opacity:1;stroke:#000000;stroke-opacity:0.48427669">PRESS 'S' TO START</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:24.23506355px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#8b97f7;fill-opacity:0.71698112;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:0.36477986;font-family:Impact"
+       style="font-size:24.23506355px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#8b97f7;fill-opacity:0.71698112;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:0.36477984;font-family:Impact"
        x="155.14291"
        y="98.072731"
        id="text2310"
@@ -737,30 +737,30 @@
          sodipodi:role="line"
          id="tspan2312"
          x="155.14291"
-         y="98.072731">3</tspan></text>
+         y="98.072731">5</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:34.12601852px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#e473f5;fill-opacity:0.71698112;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:0.36477986;font-family:Impact"
-       x="168.34908"
-       y="107.43808"
+       style="font-size:31.53555298px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#e473f5;fill-opacity:0.71698112;stroke:#000000;stroke-width:0.99999976px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:0.36477984;font-family:Impact"
+       x="177.92189"
+       y="98.789871"
        id="text2318"
        sodipodi:linespacing="100%"
-       transform="scale(1.167805,0.856307)"><tspan
+       transform="scale(1.079159,0.926647)"><tspan
          sodipodi:role="line"
          id="tspan2320"
-         x="168.34908"
-         y="107.43808">6</tspan></text>
+         x="177.92189"
+         y="98.789871">10</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:41.11795425px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#f4ec67;fill-opacity:0.71698112;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:0.36477986;font-family:Impact"
-       x="194.55077"
-       y="108.12508"
+       style="font-size:36.37340546px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#f4ec67;fill-opacity:0.71698112;stroke:#000000;stroke-width:1.00000048px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:0.36477984;font-family:Impact"
+       x="227.2673"
+       y="91.636658"
        id="text2322"
        sodipodi:linespacing="100%"
-       transform="matrix(1.166261,8.665625e-3,-8.296169e-3,0.857379,0,0)"><tspan
+       transform="matrix(0.98753,1.0234e-2,-7.024763e-3,1.012555,0,0)"><tspan
          sodipodi:role="line"
          id="tspan2324"
-         x="194.55077"
-         y="108.12508">9</tspan></text>
+         x="227.2673"
+         y="91.636658">15</tspan></text>
   </g>
 </svg>

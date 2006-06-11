@@ -44,9 +44,9 @@ enum blitrect {
 	BR_EXPLODING4,
 	BR_EXPLODING5,
 
+	BR_BONUS_1,
+	BR_BONUS_2,
 	BR_BONUS_3,
-	BR_BONUS_6,
-	BR_BONUS_9,
 		
 	BR_BACKGROUND,
 	BR_PAUSE,
@@ -84,9 +84,9 @@ SDL_Rect blitrect[] = {
 	[BR_EXPLODING4] =	{  96,  64,  32, 32 },
 	[BR_EXPLODING5] =	{ 128,  64,  32, 32 },
 	
-	[BR_BONUS_3] =		{ 160,  64,  32, 32 },
-	[BR_BONUS_6] =		{ 192,  64,  32, 32 },
-	[BR_BONUS_9] =		{ 224,  64,  32, 32 },
+	[BR_BONUS_1] =		{ 160,  64,  32, 32 },
+	[BR_BONUS_2] =		{ 192,  64,  32, 32 },
+	[BR_BONUS_3] =		{ 224,  64,  32, 32 },
 		
 	[BR_BACKGROUND] =	{   0,  96,  32, 32 },
 	[BR_PAUSE] =     	{  32,  96, 128, 32 },
@@ -108,12 +108,12 @@ SDL_Rect blitrect[] = {
 
 enum sample {
 	SAMPLE_START,
-	SAMPLE_EXPLODE,
+	SAMPLE_BONUS_1,
 	SAMPLE_NEW_BLOCK,
 	SAMPLE_FALL,
 	SAMPLE_SCORE,
-	SAMPLE_BONUS,
-	SAMPLE_BONUS2,
+	SAMPLE_BONUS_2,
+	SAMPLE_BONUS_3,
 	SAMPLE_HURRY,
 	SAMPLE_PAUSE,
 	SAMPLE_GAME_OVER,
@@ -129,12 +129,12 @@ struct sample_t {
 
 struct sample_t sample_list[NUM_SAMPLES] = {
 	[SAMPLE_START] = 	{ "wav/start.wav" },
-	[SAMPLE_EXPLODE] = 	{ "wav/explode.wav" },
 	[SAMPLE_NEW_BLOCK] = 	{ "wav/new_block.wav" },
 	[SAMPLE_FALL] = 	{ "wav/fall.wav" },
 	[SAMPLE_SCORE] = 	{ "wav/score.wav" },
-	[SAMPLE_BONUS] = 	{ "wav/bonus.wav" },
-	[SAMPLE_BONUS2] = 	{ "wav/bonus2.wav" },
+	[SAMPLE_BONUS_1] = 	{ "wav/explode.wav" },
+	[SAMPLE_BONUS_2] = 	{ "wav/bonus.wav" },
+	[SAMPLE_BONUS_3] = 	{ "wav/bonus2.wav" },
 	[SAMPLE_HURRY] = 	{ "wav/hurry.wav" },
 	[SAMPLE_PAUSE] = 	{ "wav/pause.wav" },
 	[SAMPLE_GAME_OVER] = 	{ "wav/game_over.wav" },
@@ -447,9 +447,9 @@ void draw(struct game_t *g)
 	 */
 
 	if(floating_score.visible) {
-		if(floating_score.points == 3) blit(g, BR_BONUS_3, floating_score.x, floating_score.y);
-		if(floating_score.points == 6) blit(g, BR_BONUS_6, floating_score.x, floating_score.y);
-		if(floating_score.points == 9) blit(g, BR_BONUS_9, floating_score.x, floating_score.y);
+		if(floating_score.points ==  5) blit(g, BR_BONUS_1, floating_score.x, floating_score.y);
+		if(floating_score.points == 10) blit(g, BR_BONUS_2, floating_score.x, floating_score.y);
+		if(floating_score.points == 15) blit(g, BR_BONUS_3, floating_score.x, floating_score.y);
 		floating_score.x += floating_score.dx;
 		floating_score.y += floating_score.dy;
 
@@ -486,10 +486,10 @@ static void game_callback(struct game_t *g, struct game_event *event)
 			break;
 
 		case GAME_EVENT_EXPLODING :
-			if(event->data.exploding.blocks == 3) sample = &sample_list[SAMPLE_EXPLODE];
-			if(event->data.exploding.blocks == 4) sample = &sample_list[SAMPLE_BONUS];
-			if(event->data.exploding.blocks == 5) sample = &sample_list[SAMPLE_BONUS2];
-			if(event->data.exploding.blocks == 6) sample = &sample_list[SAMPLE_BONUS2];
+			if(event->data.exploding.blocks == 3) sample = &sample_list[SAMPLE_BONUS_1];
+			if(event->data.exploding.blocks == 4) sample = &sample_list[SAMPLE_BONUS_2];
+			if(event->data.exploding.blocks == 5) sample = &sample_list[SAMPLE_BONUS_3];
+			if(event->data.exploding.blocks == 6) sample = &sample_list[SAMPLE_BONUS_3];
 
 			floating_score.x = event->data.exploding.x * 32;
 			floating_score.y = event->data.exploding.y * 32;

@@ -189,7 +189,7 @@ static void explode_same_cells(struct game_t *g)
 	center_x /= same_count;
 	center_y /= same_count;
 	
-	points = (same_count - 2) * 3;
+	points = (same_count - 2) * 5;
 
 	event.id = GAME_EVENT_EXPLODING; 
 	event.data.exploding.points = points;
