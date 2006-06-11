@@ -21,6 +21,7 @@
 
 Uint32 game_timer(Uint32 interval, void *data);
 void draw(struct game_t *g);
+static SDL_Surface *load_img(char *fname);
 
 SDL_Surface *screen;
 SDL_Surface *background;
@@ -159,7 +160,7 @@ int main(int argc, char **argv)
 {
 	struct game_t *g;
 	SDL_Event ev;
-	SDL_Surface *tmp;
+	SDL_Surface *icon;
 	int i;
 	int r;
 	Mix_Music *music;
@@ -178,23 +179,18 @@ int main(int argc, char **argv)
 	 * Set icon and init video
 	 */
 
-	tmp = IMG_Load("img/icon.png");
-	SDL_WM_SetIcon(tmp, NULL);
-	SDL_FreeSurface(tmp);
+	icon = IMG_Load("img/icon.png");
+	if(icon) {
+		SDL_WM_SetIcon(icon, NULL);
+		SDL_FreeSurface(icon);
+	}
+
 	screen = SDL_SetVideoMode(BOARD_W*32+3, BOARD_H*32+3, 0, 0);
 	SDL_EnableKeyRepeat(100, 40);
 
-	tmp = IMG_Load("img/game.png");
-	blits = SDL_DisplayFormatAlpha(tmp);
-	SDL_FreeSurface(tmp);
-	
-	tmp = IMG_Load("img/background.png");
-	background = SDL_DisplayFormatAlpha(tmp);
-	SDL_FreeSurface(tmp);
-	
-	tmp = IMG_Load("img/help.png");
-	help = SDL_DisplayFormatAlpha(tmp);
-	SDL_FreeSurface(tmp);
+	blits      = load_img("img/game.png");
+	background = load_img("img/background.png");
+	help       = load_img("img/help.png");
 
 	/*
 	 * Init audio
@@ -218,7 +214,7 @@ int main(int argc, char **argv)
 		for(i=0; i<NUM_SAMPLES; i++) {
 			sample_list[i].chunk = Mix_LoadWAV(sample_list[i].fname);
 			if(sample_list[i].chunk == NULL) {
-				printf("Error loading wav: %s\n", Mix_GetError());
+				fprintf(stderr, "Error loading wav: %s\n", Mix_GetError());
 				exit(1);
 			}
 			Mix_VolumeChunk(sample_list[i].chunk, 128);
@@ -236,6 +232,7 @@ int main(int argc, char **argv)
 	 */
 
 	g = game_new();
+	if(g == NULL) exit(1);
 	game_register_callback(g, game_callback);
 
 	while(SDL_WaitEvent(&ev)) {
@@ -527,6 +524,32 @@ static void game_callback(struct game_t *g, struct game_event *event)
 	};
 
 	if(have_audio && sample) Mix_PlayChannel(-1, sample->chunk, 0);
+}
+
+
+/*
+ * Load image and convert to display format
+ */
+
+static SDL_Surface *load_img(char *fname)
+{
+	SDL_Surface *surf1, *surf2;
+
+	surf1 = IMG_Load(fname);
+	if(surf1 == NULL) {
+		fprintf(stderr, "Can't load image '%s': %s\n", fname, SDL_GetError());
+		exit(1);
+	}
+
+	surf2 = SDL_DisplayFormatAlpha(surf1);
+	if(surf2 == NULL) {
+		fprintf(stderr, "Can't convert image to display format: %s\n", SDL_GetError());
+		exit(1);
+	}
+
+	SDL_FreeSurface(surf1);
+
+	return surf2;
 }
 
 /*

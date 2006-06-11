@@ -31,6 +31,7 @@ struct game_t *game_new(void)
 	srand(time(NULL));
 
 	g = calloc(sizeof(*g), 1);
+	if(g == NULL) return NULL;
 	g->state = GAME_STATE_IDLE;
 	g->cursor_x = BOARD_W / 2;
 	g->cursor_y = BOARD_H / 2;
